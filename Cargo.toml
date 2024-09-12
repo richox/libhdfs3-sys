@@ -4,6 +4,7 @@ version = "0.2.0"
 links = "hdfs3"
 build = "build.rs"
 edition = "2021"
+resolver = "1"
 
 description = "A Rust binding to libhdfs3 from Apache hawq"
 authors = ["Ahmed Riza <dr.riza@gmail.com>"]

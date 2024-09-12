@@ -16,19 +16,28 @@ fn build_hdfs3_lib() {
     //
     // Uncomment the following 4 lines for static linking
     //
-    // println!("cargo:rerun-if-changed={}", get_hdfs3_file_path("src/client/hdfs.h"));
-    // let dst = cmake::build("libhdfs3");
-    // println!("cargo:rustc-link-search=native={}/lib", dst.display());
-    // println!("cargo:rustc-link-lib=static=hdfs3");
-    // println!("cargo:rustc-link-lib=dylib=stdc++");
-    // println!("cargo:rustc-link-lib=dylib=protobuf");
-    // println!("cargo:rustc-link-lib=dylib=gsasl");
-    // println!("cargo:rustc-link-lib=dylib=uuid");
-    // println!("cargo:rustc-link-lib=dylib=xml2");
-    // println!("cargo:rustc-link-lib=dylib=krb5");
+    println!("cargo:rerun-if-changed={}", get_hdfs3_file_path("src/client/hdfs.h"));
+    let out_dir = env::var("OUT_DIR").expect("OUT_DIR not set");
+    let dst = cmake::Config::new("libhdfs3-1.0.0")
+        .out_dir(&out_dir)
+        .cxxflag("-std=c++17 -fPIC")
+        .profile("Release")
+        .define("CMAKE_INSTALL_INCLUDEDIR", format!("{}/lib", &out_dir))
+        .define("CMAKE_INSTALL_LIBDIR", format!("{}/lib", &out_dir))
+        .define("CMAKE_POSITION_INDEPENDENT_CODE", "ON")
+        .define("CMAKE_CXX_FLAGS", "-fPIC")
+        .very_verbose(true)
+        .build();
+    println!("cargo:rustc-link-search=native={}/lib", dst.display());
+    println!("cargo:rustc-link-lib=static=hdfs3");
+    println!("cargo:rustc-link-lib=static=protobuf");
+    println!("cargo:rustc-link-lib=static=gsasl");
+    println!("cargo:rustc-link-lib=static=uuid");
+    println!("cargo:rustc-link-lib=static=xml2");
+    println!("cargo:rustc-link-lib=static=krb5");
 
     // Comment out this, if statically linking
-    println!("cargo:rustc-link-lib=dylib=hdfs3");
+    // println!("cargo:rustc-link-lib=dylib=hdfs3");
 }
 
 fn get_hdfs3_file_path(filename: &'static str) -> String {
